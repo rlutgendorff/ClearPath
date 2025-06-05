@@ -2,12 +2,10 @@
 
 namespace ClearPath.Builders;
 
-
-
 public class ResultBuilder
 {
     private readonly ResultBuilderContext _context = new();
-    private readonly List<StepFailure> _failures = new();
+    private readonly List<StepFailure> _failures = [];
     private ResultBuilderEvents? _events;
 
     private ResultBuilder() { }
@@ -54,7 +52,22 @@ public class ResultBuilder
         return this;
     }
 
-    public async Task<ResultBuilder> DoWhenSuccessAsync<T>(string key, Func<ResultBuilderContext, Task<IResult<T>>> func)
+    public async Task<ResultBuilder> DoWhenSuccessAsync<T>(
+        string key, 
+        Func<Task<IResult<T>>> func)
+    {
+        if (HasFailure) return this;
+        _events?.OnStepStart?.Invoke(key);
+
+        var result = await func();
+        TrackResult(key, result);
+        
+        return this;
+    }
+
+    public async Task<ResultBuilder> DoWhenSuccessAsync<T>(
+        string key, 
+        Func<ResultBuilderContext, Task<IResult<T>>> func)
     {
         if (HasFailure) return this;
 
@@ -120,11 +133,11 @@ public class ResultBuilder
         return this;
     }
 
-    public ResultBuilder OnSuccess(string key, Action<ResultBuilder> action)
+    public ResultBuilder OnSuccess(string key, Action<ResultBuilderContext> action)
     {
         if (_context.TryGetValue(key, out var result) && result.IsSuccess)
         {
-            action(this);
+            action(_context);
         }
         return this;
     }
@@ -138,34 +151,36 @@ public class ResultBuilder
         return this;
     }
 
-    public ResultBuilder OnFailure(Action<ResultBuilder, List<StepFailure>> action)
+    public ResultBuilder OnFailure(Action<ResultBuilderContext, List<StepFailure>> action)
     {
-        if (_failures.Any())
+        if (_failures.Count != 0)
         {
-            action(this, _failures);
+            action(_context, _failures);
         }
         return this;
     }
 
-    public ResultBuilder OnFailure(string failedKey, Func<ResultBuilder, IResult> fallbackFunc, string fallbackKey)
+    public ResultBuilder OnFailure(string failedKey, Func<ResultBuilderContext, IResult> fallbackFunc, string fallbackKey)
     {
         if (_failures.Any(f => f.Key == failedKey))
         {
-            var fallback = fallbackFunc(this);
+            var fallback = fallbackFunc(_context);
             TrackResult(fallbackKey, fallback);
+            return this;
         }
+
         return this;
     }
 
-    public ResultBuilder RetryOnFailure(string key, Func<ResultBuilder, IResult> func, int maxAttempts = 3, int delayMs = 250)
+    public ResultBuilder RetryOnFailure(string key, Func<ResultBuilderContext, IResult> func, int maxAttempts = 3, int delayMs = 250)
     {
         if (_failures.Any(f => f.Key == key))
         {
             _failures.RemoveAll(f => f.Key == key);
 
-            for (int i = 0; i < maxAttempts; i++)
+            for (var i = 0; i < maxAttempts; i++)
             {
-                var result = func(this);
+                var result = func(_context);
                 if (result.IsSuccess)
                 {
                     _context.Set(key, result);
@@ -175,13 +190,13 @@ public class ResultBuilder
                 Thread.Sleep(delayMs);
             }
 
-            TrackResult(key, func(this));
+            TrackResult(key, func(_context));
         }
 
         return this;
     }
 
-    public async Task<ResultBuilder> RetryOnFailureAsync(string key, Func<ResultBuilder, Task<IResult>> func, int maxAttempts = 3, int delayMs = 250)
+    public async Task<ResultBuilder> RetryOnFailureAsync(string key, Func<ResultBuilderContext, Task<IResult>> func, int maxAttempts = 3, int delayMs = 250)
     {
         if (_failures.Any(f => f.Key == key))
         {
@@ -189,7 +204,7 @@ public class ResultBuilder
 
             for (int i = 0; i < maxAttempts; i++)
             {
-                var result = await func(this);
+                var result = await func(_context);
                 if (result.IsSuccess)
                 {
                     _context.Set(key, result);
@@ -199,7 +214,7 @@ public class ResultBuilder
                 await Task.Delay(delayMs);
             }
 
-            TrackResult(key, await func(this));
+            TrackResult(key, await func(_context));
         }
 
         return this;
