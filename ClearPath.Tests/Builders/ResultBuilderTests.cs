@@ -456,4 +456,32 @@ public class ResultBuilderTests
         Assert.Equal(2, attempts);
     }
 
+    [Fact]
+    public void Build_SetsFirstFailure()
+    {
+        var builder = ResultBuilder
+            .StartWith("Start", Result.Ok("init"))
+            .DoWhenSuccess("FailStep", _ => Result<string>.Fail(new Error("failure")))
+            .DoWhenSuccess("Skipped", _ => Result.Ok("skip"));
+
+        var result = builder.Build(_ => "final");
+
+        var stepResult = Assert.IsType<StepResult<string>>(result);
+        Assert.Equal("FailStep", stepResult.Metadata.FirstFailure);
+    }
+
+    [Fact]
+    public void Build_IncrementsStepCount()
+    {
+        var builder = ResultBuilder
+            .StartWith("Start", Result.Ok("init"))
+            .DoWhenSuccess("Step1", _ => Result.Ok(true))
+            .DoWhenSuccess("Step2", _ => Result.Ok(true));
+
+        var result = builder.Build(_ => "done");
+
+        var stepResult = Assert.IsType<StepResult<string>>(result);
+        Assert.Equal(2, stepResult.Metadata.Steps);
+    }
+
 }

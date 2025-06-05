@@ -8,7 +8,7 @@ public class ResultBuilder
     private readonly List<StepFailure> _failures = [];
     private ResultBuilderEvents? _events;
     
-    private Result _result = Result.Ok();
+    private StepResult _result = StepResult.Ok();
 
     private ResultBuilder() { }
     
@@ -44,6 +44,8 @@ public class ResultBuilder
 
     public ResultBuilder DoWhenSuccess<T>(string key, Func<ResultBuilderContext, IResult<T>> func)
     {
+        _result.Metadata.Steps++;
+
         if (HasFailure) return this;
 
         _events?.OnStepStart?.Invoke(key);
@@ -54,23 +56,27 @@ public class ResultBuilder
     }
 
     public async Task<ResultBuilder> DoWhenSuccessAsync<T>(
-        string key, 
+        string key,
         Func<Task<IResult<T>>> func)
     {
+        _result.Metadata.Steps++;
+
         if (HasFailure) return this;
         _events?.OnStepStart?.Invoke(key);
 
         var result = await func();
         TrackResult(key, result);
-        
+
         return this;
     }
 
     public async Task<ResultBuilder> DoWhenSuccessAsync<T>(
-        string key, 
+        string key,
         Func<ResultBuilderContext, Task<IResult<T>>> func)
     {
-        if (HasFailure) 
+        _result.Metadata.Steps++;
+
+        if (HasFailure)
             return this;
 
         _events?
@@ -88,6 +94,8 @@ public class ResultBuilder
         Func<T1, Task<IResult<TResult>>> func,
         Func<ResultBuilderContext, T1> getArg1)
     {
+        _result.Metadata.Steps++;
+
         if (HasFailure) return this;
 
         _events?.OnStepStart?.Invoke(key);
@@ -105,6 +113,8 @@ public class ResultBuilder
         Func<ResultBuilderContext, T1> getArg1,
         Func<ResultBuilderContext, T2> getArg2)
     {
+        _result.Metadata.Steps++;
+
         if (HasFailure) return this;
 
         _events?.OnStepStart?.Invoke(key);
@@ -124,6 +134,8 @@ public class ResultBuilder
         Func<ResultBuilderContext, T2> getArg2,
         Func<ResultBuilderContext, T3> getArg3)
     {
+        _result.Metadata.Steps++;
+
         if (HasFailure) return this;
 
         _events?.OnStepStart?.Invoke(key);
@@ -228,11 +240,18 @@ public class ResultBuilder
         return this;
     }
 
-    public IResult<T> Build<T>(Func<ResultBuilderContext, T> func)
+    public StepResult<T> Build<T>(Func<ResultBuilderContext, T> func)
     {
         var value = func(_context);
 
-        var newResult = _result.ToResult(value);
+        var newResult = new StepResult<T>(_result) { Value = value };
+        newResult.Metadata.FirstFailure = _result.Metadata.FirstFailure;
+        newResult.Metadata.Steps = _result.Metadata.Steps;
+        foreach (var kv in _result.Metadata.AdditionalData)
+        {
+            newResult.Metadata.AdditionalData[kv.Key] = kv.Value;
+        }
+
         return newResult;
     }
 
@@ -249,10 +268,14 @@ public class ResultBuilder
         _context.Set(key,result);
 
         _result.Reasons.AddRange(result.Reasons);
-        
+
         if (result.IsFailed)
         {
             _failures.Add(new StepFailure(key, result.Errors));
+            if (_result.Metadata.FirstFailure == null)
+            {
+                _result.Metadata.FirstFailure = key;
+            }
             _events?.OnStepFailure?.Invoke(key, result.Errors);
         }
         else
