@@ -7,6 +7,8 @@ public class ResultBuilder
     private readonly ResultBuilderContext _context = new();
     private readonly List<StepFailure> _failures = [];
     private ResultBuilderEvents? _events;
+    
+    private Result _result = Result.Ok();
 
     private ResultBuilder() { }
     
@@ -226,10 +228,16 @@ public class ResultBuilder
         return this;
     }
 
-    
+    public IResult<T> Build<T>(Func<ResultBuilderContext, T> func)
+    {
+        var value = func(_context);
 
-    public IResult<T> Build<T>(string key) => _context.Get<T>(key);
-    public IResult Build(string key) => _context.Get(key);
+        var newResult = _result.ToResult(value);
+        return newResult;
+    }
+
+    public IResult<T> Get<T>(string key) => _context.Get<T>(key);
+    public IResult Get(string key) => _context.Get(key);
     public IResult<T>? BuildOnSuccess<T>(string key) => !HasFailure ? _context.Get<T>(key) : null;
 
     public bool HasFailure => _failures.Count > 0;
@@ -240,6 +248,8 @@ public class ResultBuilder
     {
         _context.Set(key,result);
 
+        _result.Reasons.AddRange(result.Reasons);
+        
         if (result.IsFailed)
         {
             _failures.Add(new StepFailure(key, result.Errors));

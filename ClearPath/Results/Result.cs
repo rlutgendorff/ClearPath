@@ -13,17 +13,25 @@ public partial class Result : BaseResult
     Reasons.AddRange(reasons); 
   }
   
-  private Result ToResult()
+  public Result ToResult()
   {
     var result = new Result();
     result.Reasons.AddRange(Reasons);
     return result;  
   }
   
-  internal Result<TOut> ToResult<TOut>()
+  public Result<TOut> ToResult<TOut>()
   {
     var result = new Result<TOut>();
     result.Reasons.AddRange(Reasons);
+    return result;
+  }
+
+  public Result<TOut> ToResult<TOut>(TOut value)
+  {
+    var result = new Result<TOut>();
+    result.Reasons.AddRange(Reasons);
+    result.Value = value;
     return result;
   }
 }

@@ -24,7 +24,7 @@ public class ResultBuilderTests
     {
         var result = ResultBuilder.StartWith("Test", () => Result.Ok("test"))
             .With("Test2", true)
-            .Build<bool>("Test2");
+            .Get<bool>("Test2");
         
         Assert.True(result.Value);
     }
@@ -46,7 +46,7 @@ public class ResultBuilderTests
         ResultBuilder.StartWith("Test", () => Result.Ok("test"))
             .WithEvents(events)
             .DoWhenSuccess("Test2", _ => Result.Ok(true))
-            .Build<bool>("Test2");
+            .Get<bool>("Test2");
         
         Assert.False(stepFailureTriggered);
         Assert.True(stepStartTriggered);
@@ -70,7 +70,7 @@ public class ResultBuilderTests
         ResultBuilder.StartWith("Test", () => Result.Ok("test"))
             .WithEvents(events)
             .DoWhenSuccess("Test2", _ => Result<object>.Fail(new Error("Test")))
-            .Build<object>("Test2");
+            .Get<object>("Test2");
         
         Assert.True(stepFailureTriggered);
         Assert.True(stepStartTriggered);
@@ -167,7 +167,7 @@ public class ResultBuilderTests
             .StartWith("Test", Result<string>.Fail(new Error("failure")))
             .OnFailure("Test", _ => Result.Ok("fallback"), "FallbackKey");
 
-        var result = builder.Build<string>("FallbackKey");
+        var result = builder.Get<string>("FallbackKey");
         Assert.True(result.IsSuccess);
         Assert.Equal("fallback", result.Value);
     }
@@ -184,7 +184,7 @@ public class ResultBuilderTests
                 return attempts == 2 ? Result.Ok("success") : Result<string>.Fail(new Error("retry failure"));
             }, maxAttempts: 3);
 
-        var result = builder.Build<string>("Test");
+        var result = builder.Get<string>("Test");
         Assert.True(result.IsSuccess);
         Assert.Equal("success", result.Value);
         Assert.Equal(2, attempts);
@@ -241,7 +241,7 @@ public class ResultBuilderTests
                 _ => true
             );
 
-        var result = builder.Build<string>("MultiArg");
+        var result = builder.Get<string>("MultiArg");
         Assert.True(result.IsSuccess);
         Assert.Equal("test42True", result.Value);
     }
@@ -305,7 +305,7 @@ public class ResultBuilderTests
     public void Build_NonGeneric_ReturnsResult()
     {
         var builder = ResultBuilder.StartWith("Test", Result.Ok("test"));
-        var result = builder.Build("Test");
+        var result = builder.Get("Test");
         Assert.True(result.IsSuccess);
     }
 
@@ -316,7 +316,7 @@ public class ResultBuilderTests
             .StartWith("Test", Result.Ok("test"))
             .DoWhenSuccessAsync("Next", _ => Task.FromResult<IResult<string>>(Result.Ok("success")));
         
-        var result = builder.Build<string>("Next");
+        var result = builder.Get<string>("Next");
         Assert.True(result.IsSuccess);
         Assert.Equal("success", result.Value);
     }
@@ -329,7 +329,7 @@ public class ResultBuilderTests
             .DoWhenSuccessAsync("Next", _ => Task.FromResult<IResult<string>>(Result<string>.Fail(new Error("failure"))))
             .DoWhenSuccessAsync("Next2", _ => Task.FromResult<IResult<string>>(Result.Ok("success")));
         
-        var result = builder.Build<string>("Next");
+        var result = builder.Get<string>("Next");
         Assert.True(result.IsFailed);
     }
 
@@ -340,7 +340,7 @@ public class ResultBuilderTests
             .StartWith("Test", Result.Ok("test"))
             .DoWhenSuccessAsync("Next", () => Task.FromResult<IResult<string>>(Result.Ok("success")));
         
-        var result = builder.Build<string>("Next");
+        var result = builder.Get<string>("Next");
         Assert.True(result.IsSuccess);
         Assert.Equal("success", result.Value);
     }
@@ -375,7 +375,7 @@ public class ResultBuilderTests
             .OnFailure("DifferentKey", _ => Result.Ok("fallback"), "FallbackKey");
 
         Assert.True(builder.HasFailure);
-        Assert.Throws<KeyNotFoundException>(() => builder.Build<string>("FallbackKey"));
+        Assert.Throws<KeyNotFoundException>(() => builder.Get<string>("FallbackKey"));
     }
 
     [Fact]
@@ -418,7 +418,7 @@ public class ResultBuilderTests
                 _ => 42
             );
 
-        var result = builder.Build<string>("TwoArgs");
+        var result = builder.Get<string>("TwoArgs");
         Assert.True(result.IsSuccess);
         Assert.Equal("test42", result.Value);
     }
@@ -434,7 +434,7 @@ public class ResultBuilderTests
                 _ => "test"
             );
 
-        var result = builder.Build<string>("OneArg");
+        var result = builder.Get<string>("OneArg");
         Assert.True(result.IsSuccess);
         Assert.Equal("processed-test", result.Value);
     }
@@ -451,7 +451,7 @@ public class ResultBuilderTests
                 return Result<string>.Fail(new Error("persistent failure"));
             }, maxAttempts: 2);
 
-        var result = builder.Build<string>("Test");
+        var result = builder.Get<string>("Test");
         Assert.True(result.IsFailed);
         Assert.Equal(2, attempts);
     }
