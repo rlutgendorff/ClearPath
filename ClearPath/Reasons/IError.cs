@@ -32,15 +32,15 @@ public interface IError : IReason
             Reasons.Add(causedBy);
         }
 
-        // public Error CausedBy(IError error)
-        // {
-        //     if (error == null)
-        //         throw new ArgumentNullException(nameof(error));
-        //
-        //     Reasons.Add(error);
-        //     return this;
-        // }
-        //
+        public Error CausedBy(IError error)
+        {
+            if (error == null)
+                throw new ArgumentNullException(nameof(error));
+        
+            Reasons.Add(error);
+            return this;
+        }
+        
         // public Error CausedBy(Exception exception)
         // {
         //     if (exception == null)
@@ -65,15 +65,15 @@ public interface IError : IReason
         //     return this;
         // }
         //
-        // public Error CausedBy(IEnumerable<IError> errors)
-        // {
-        //     if (errors == null)
-        //         throw new ArgumentNullException(nameof(errors));
-        //
-        //     Reasons.AddRange(errors);
-        //     return this;
-        // }
-        //
+        public Error CausedBy(IEnumerable<IError> errors)
+        {
+            if (errors == null)
+                throw new ArgumentNullException(nameof(errors));
+        
+            Reasons.AddRange(errors);
+            return this;
+        }
+        
         // public Error CausedBy(IEnumerable<string> errors)
         // {
         //     if (errors == null)
@@ -83,22 +83,22 @@ public interface IError : IReason
         //     return this;
         // }
         //
-        // public Error WithMetadata(string metadataName, object metadataValue)
-        // {
-        //     Metadata.Add(metadataName, metadataValue);
-        //     return this;
-        // }
-        //
-        // public Error WithMetadata(Dictionary<string, object> metadata)
-        // {
-        //     foreach (var metadataItem in metadata)
-        //     {
-        //         Metadata.Add(metadataItem.Key, metadataItem.Value);
-        //     }
-        //
-        //     return this;
-        // }
-        //
+        public Error WithMetadata(string metadataName, object metadataValue)
+        {
+            Metadata.Add(metadataName, metadataValue);
+            return this;
+        }
+        
+        public Error WithMetadata(Dictionary<string, object> metadata)
+        {
+            foreach (var metadataItem in metadata)
+            {
+                Metadata.Add(metadataItem.Key, metadataItem.Value);
+            }
+        
+            return this;
+        }
+        
         // public override string ToString()
         // {
         //     return new ReasonStringBuilder()
