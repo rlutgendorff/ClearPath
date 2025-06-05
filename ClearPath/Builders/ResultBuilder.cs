@@ -15,6 +15,7 @@ public class ResultBuilder
     public static ResultBuilder StartWith<T>(string key, IResult<T> result, ResultBuilderEvents? events = null)
     {
         var builder = new ResultBuilder();
+        builder._events = events;
         builder.TrackResult(key, result);
         return builder;
     }
