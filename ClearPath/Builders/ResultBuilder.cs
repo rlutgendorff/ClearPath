@@ -157,7 +157,7 @@ public class ResultBuilder
         return this;
     }
 
-    /*public ResultBuilder RetryOnFailure(string key, Func<ResultBuilder, IResult> func, int maxAttempts = 3, int delayMs = 250)
+    public ResultBuilder RetryOnFailure(string key, Func<ResultBuilder, IResult> func, int maxAttempts = 3, int delayMs = 250)
     {
         if (_failures.Any(f => f.Key == key))
         {
@@ -168,7 +168,7 @@ public class ResultBuilder
                 var result = func(this);
                 if (result.IsSuccess)
                 {
-                    _context. _values[key] = result;
+                    _context.Set(key, result);
                     return this;
                 }
 
@@ -192,7 +192,7 @@ public class ResultBuilder
                 var result = await func(this);
                 if (result.IsSuccess)
                 {
-                    _values[key] = result;
+                    _context.Set(key, result);
                     return this;
                 }
 
@@ -203,7 +203,7 @@ public class ResultBuilder
         }
 
         return this;
-    }*/
+    }
 
     
 
