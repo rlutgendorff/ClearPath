@@ -10,14 +10,14 @@ public interface IResult
     
     List<IReason> Reasons { get; }
     
-    List<IError> Errors { get; }
+    IReadOnlyList<IError> Errors { get; }
     
-    List<ISuccess> Successes { get; }
+    IReadOnlyList<ISuccess> Successes { get; }
 }
 
-public interface IResult<out TValue> : IResult
+public interface IResult<TValue> : IResult
 {
-    TValue Value { get; }
+    TValue? Value { get; }
     
     TValue ValueOrDefault { get; }
 }

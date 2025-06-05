@@ -48,7 +48,6 @@ public class ResultBuilder
 
         var result = func(_context);
         TrackResult(key, result);
-
         return this;
     }
 
@@ -69,9 +68,12 @@ public class ResultBuilder
         string key, 
         Func<ResultBuilderContext, Task<IResult<T>>> func)
     {
-        if (HasFailure) return this;
+        if (HasFailure) 
+            return this;
 
-        _events?.OnStepStart?.Invoke(key);
+        _events?
+            .OnStepStart?
+            .Invoke(key);
 
         var result = await func(_context);
         TrackResult(key, result);
@@ -135,7 +137,7 @@ public class ResultBuilder
 
     public ResultBuilder OnSuccess(string key, Action<ResultBuilderContext> action)
     {
-        if (_context.TryGetValue(key, out var result) && result.IsSuccess)
+        if (_context.TryGet(key, out var result) && result.IsSuccess)
         {
             action(_context);
         }
@@ -178,9 +180,11 @@ public class ResultBuilder
         {
             _failures.RemoveAll(f => f.Key == key);
 
+            IResult result = null;
+            
             for (var i = 0; i < maxAttempts; i++)
             {
-                var result = func(_context);
+                result = func(_context);
                 if (result.IsSuccess)
                 {
                     _context.Set(key, result);
@@ -190,7 +194,7 @@ public class ResultBuilder
                 Thread.Sleep(delayMs);
             }
 
-            TrackResult(key, func(_context));
+            TrackResult(key, result);
         }
 
         return this;
@@ -202,9 +206,11 @@ public class ResultBuilder
         {
             _failures.RemoveAll(f => f.Key == key);
 
+            IResult result = null;
+            
             for (int i = 0; i < maxAttempts; i++)
             {
-                var result = await func(_context);
+                result = await func(_context);
                 if (result.IsSuccess)
                 {
                     _context.Set(key, result);
@@ -214,7 +220,7 @@ public class ResultBuilder
                 await Task.Delay(delayMs);
             }
 
-            TrackResult(key, await func(_context));
+            TrackResult(key, result);
         }
 
         return this;
@@ -263,12 +269,12 @@ public class ResultBuilder
                 : throw new KeyNotFoundException($"No result found for key '{key}'");
         }
 
-        public bool TryGetValue(string key, out IResult? result)
+        public bool TryGet(string key, out IResult? result)
         {
             return _values.TryGetValue(key, out result);
         }
         
-        public bool TryGetValue<T>(string key, out IResult<T>? result)
+        public bool TryGet<T>(string key, out IResult<T>? result)
         {
             result = null;
 

@@ -5,11 +5,11 @@ namespace ClearPath.Builders;
 public class StepFailure
 {
     public string Key { get; }
-    public List<IError> Errors { get; }
+    public IReadOnlyList<IError> Errors { get; }
 
-    public StepFailure(string key, List<IError> errors)
+    public StepFailure(string key, IEnumerable<IError> errors)
     {
         Key = key;
-        Errors = errors;
+        Errors = errors.ToList();
     }
 }

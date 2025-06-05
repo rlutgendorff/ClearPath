@@ -17,14 +17,15 @@ public partial class Result<TValue>
     public static Result<TValue> Fail(IError error)
     {
         var result = new Result<TValue>();
-        result.Errors.Add(error);
+        result.Reasons.Add(error);
+        result.Value = default;
         return result;
     }
     
     public static Result<TValue> Fail(IEnumerable<IError> errors)
     {
         var result = new Result<TValue>();
-        result.Errors.AddRange(errors);
+        result.Reasons.AddRange(errors);
         return result;
     }
 }
