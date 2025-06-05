@@ -21,6 +21,18 @@ public class StepResult : Result
     internal StepResult(IEnumerable<IReason> reasons) : base(reasons)
     {
     }
+
+    internal StepResult(Result result) : base(result.Reasons)
+    {
+    }
+
+    public static StepResult Ok() => new();
+
+    public static StepResult<TValue> Ok<TValue>(TValue value) => new(value);
+
+    public static StepResult Fail(IError error) => new([error]);
+
+    public static StepResult Fail(IEnumerable<IError> errors) => new(errors);
 }
 
 public class StepResult<TValue> : Result<TValue>
@@ -38,4 +50,20 @@ public class StepResult<TValue> : Result<TValue>
     internal StepResult(TValue value) : base(value)
     {
     }
+
+    public static StepResult<TValue> Ok(TValue value) => new(value);
+
+    public static StepResult<TValue> Fail(IError error)
+    {
+        var result = new StepResult<TValue>();
+        result.Reasons.Add(error);
+        return result;
+    }
+
+    public static StepResult<TValue> Fail(IEnumerable<IError> errors)
+    {
+        var result = new StepResult<TValue>();
+        result.Reasons.AddRange(errors);
+        return result;
+    } 
 }
