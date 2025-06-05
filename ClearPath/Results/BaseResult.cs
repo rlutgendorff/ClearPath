@@ -14,5 +14,5 @@ public abstract class BaseResult : IResult
 public abstract class BaseResult<TResult> : BaseResult, IResult<TResult>
 {
     public TResult Value { get; set; }
-    public TResult ValueOrDefault { get; }
+    public TResult ValueOrDefault => IsSuccess ? Value : default!;
 }
