@@ -53,7 +53,17 @@ public class StepResult<TValue> : Result<TValue>
 
     public static StepResult<TValue> Ok(TValue value) => new(value);
 
-    public static StepResult<TValue> Fail(IError error) => new StepResult<TValue>(Result<TValue>.Fail(error));
+    public static StepResult<TValue> Fail(IError error)
+    {
+        var result = new StepResult<TValue>();
+        result.Reasons.Add(error);
+        return result;
+    }
 
-    public static StepResult<TValue> Fail(IEnumerable<IError> errors) => new StepResult<TValue>(Result<TValue>.Fail(errors));
+    public static StepResult<TValue> Fail(IEnumerable<IError> errors)
+    {
+        var result = new StepResult<TValue>();
+        result.Reasons.AddRange(errors);
+        return result;
+    } 
 }

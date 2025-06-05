@@ -15,7 +15,7 @@ public interface IResult
     IReadOnlyList<ISuccess> Successes { get; }
 }
 
-public interface IResult<TValue> : IResult
+public interface IResult<out TValue> : IResult
 {
     TValue? Value { get; }
     
