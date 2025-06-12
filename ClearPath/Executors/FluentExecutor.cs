@@ -148,69 +148,42 @@ public class FluentExecutor
         return this;
     }
 
-    public FluentExecutor Then(Action action, string? key = null)
+    public FluentExecutor Then(Func<IResult> action, string key)
     {
-        _events?.OnStepStart?.Invoke("Action");
-        _result.Metadata.Steps++;
-        try
-        {
-            action();
-        }
-        catch (Exception e)
-        {
-            if (string.IsNullOrEmpty(key))
-                key = action.Method.Name;
-
-            TrackResult(key, StepResult.Fail(new Error($"Action failed: {e.Message}")));
-        }
-
-        return this;
-    }
-
-    public async Task<FluentExecutor> Then(Func<Task> func, string? key = null)
-    {
-        _events?.OnStepStart?.Invoke("Action");
-        _result.Metadata.Steps++;
-        try
-        {
-            await func();
-        }
-        catch (Exception e)
-        {
-            if (string.IsNullOrEmpty(key))
-                key = func.Method.Name;
-
-            TrackResult(key, StepResult.Fail(new Error($"Action failed: {e.Message}")));
-        }
-
-        return this;
-    }
-
-    public FluentExecutor Then<T1>(Action<T1> action, string? key = null)
-    {
-        _events?.OnStepStart?.Invoke("Action");
+        _events?.OnStepStart?.Invoke(action.Method.Name);
 
         _result.Metadata.Steps++;
 
-        var parameter = action.Method.GetParameters()[0];
-
-        var input = GetValue<T1>(parameter);
-
-        try
-        {
-            action(input);
-        }
-        catch (Exception e)
-        {
-            if (string.IsNullOrEmpty(key))
-                key = action.Method.Name;
-
-            TrackResult(key, StepResult.Fail(new Error($"Action failed: {e.Message}")));
-        }
+        var result = action();
+        TrackResult(key, result, action.Method.Name);
         return this;
     }
 
-    public async Task<FluentExecutor> Then<T1>(Func<T1, Task<IResult>> func, string? key = null)
+    public async Task<FluentExecutor> Then(Func<Task<IResult>> func, string key)
+    {
+        _events?.OnStepStart?.Invoke(func.Method.Name);
+
+        _result.Metadata.Steps++;
+
+        var result = await func();
+        TrackResult(key, result, func.Method.Name);
+        return this;
+    }
+
+    public FluentExecutor Then<T1>(Func<T1, IResult> action, string key)
+    {
+        _events?.OnStepStart?.Invoke(typeof(T1).Name);
+
+        _result.Metadata.Steps++;
+
+        var input = GetValue<T1>(action.Method.GetParameters()[0]);
+
+        var result = action(input);
+        TrackResult(key, result, action.Method.Name);
+        return this;
+    }
+
+    public async Task<FluentExecutor> Then<T1>(Func<T1, Task<IResult>> func, string key)
     {
         _events?.OnStepStart?.Invoke("Action");
         _result.Metadata.Steps++;
@@ -218,33 +191,29 @@ public class FluentExecutor
         var input = GetValue<T1>(parameter);
         var result = func(input);
 
-        if (string.IsNullOrEmpty(key))
-            key = func.Method.Name;
-        TrackResult(key, await result);
+        TrackResult(key, await result, func.Method.Name);
         return this;
     }
 
-    public FluentExecutor Then<T1, T2>(Action<T1, T2> action, string? key = null)
+    public FluentExecutor Then<T1, T2>(Func<T1, T2, IResult> action, string key)
     {
-        _events?.OnStepStart?.Invoke("Action");
+        _events?.OnStepStart?.Invoke(nameof(IResult));
+
         _result.Metadata.Steps++;
+
         var parameters = action.Method.GetParameters();
+
         var input1 = GetValue<T1>(parameters[0]);
         var input2 = GetValue<T2>(parameters[1]);
-        try
-        {
-            action(input1, input2);
-        }
-        catch (Exception e)
-        {
-            if (string.IsNullOrEmpty(key))
-                key = action.Method.Name;
-            TrackResult(key, StepResult.Fail(new Error($"Action failed: {e.Message}")));
-        }
+
+        
+        var result =action(input1, input2);
+
+        TrackResult(key, result, action.Method.Name);
         return this;
     }
 
-    public async Task<FluentExecutor> Then<T1, T2>(Func<T1, T2, Task<IResult>> func, string? key = null)
+    public async Task<FluentExecutor> Then<T1, T2>(Func<T1, T2, Task<IResult>> func, string key)
     {
         _events?.OnStepStart?.Invoke("Action");
         _result.Metadata.Steps++;
@@ -252,34 +221,29 @@ public class FluentExecutor
         var input1 = GetValue<T1>(parameters[0]);
         var input2 = GetValue<T2>(parameters[1]);
         var result = await func(input1, input2);
-        if (string.IsNullOrEmpty(key))
-            key = func.Method.Name;
-        TrackResult(key, result);
+        TrackResult(key, result, func.Method.Name);
         return this;
     }
 
-    public FluentExecutor Then<T1, T2, T3>(Action<T1, T2, T3> action, string? key = null)
+    public FluentExecutor Then<T1, T2, T3>(Func<T1, T2, T3, IResult> action, string key)
     {
-        _events?.OnStepStart?.Invoke("Action");
+        _events?.OnStepStart?.Invoke(nameof(IResult));
+
         _result.Metadata.Steps++;
+
         var parameters = action.Method.GetParameters();
+
         var input1 = GetValue<T1>(parameters[0]);
         var input2 = GetValue<T2>(parameters[1]);
         var input3 = GetValue<T3>(parameters[2]);
-        try
-        {
-            action(input1, input2, input3);
-        }
-        catch (Exception e)
-        {
-            if (string.IsNullOrEmpty(key))
-                key = action.Method.Name;
-            TrackResult(key, StepResult.Fail(new Error($"Action failed: {e.Message}")));
-        }
+
+        var result = action(input1, input2, input3);
+
+        TrackResult(key, result, action.Method.Name);
         return this;
     }
 
-    public async Task<FluentExecutor> Then<T1, T2, T3>(Func<T1, T2, T3, Task<IResult>> func, string? key = null)
+    public async Task<FluentExecutor> Then<T1, T2, T3>(Func<T1, T2, T3, Task<IResult>> func, string key)
     {
         _events?.OnStepStart?.Invoke("Action");
         _result.Metadata.Steps++;
@@ -288,9 +252,7 @@ public class FluentExecutor
         var input2 = GetValue<T2>(parameters[1]);
         var input3 = GetValue<T3>(parameters[2]);
         var result = await func(input1, input2, input3);
-        if (string.IsNullOrEmpty(key))
-            key = func.Method.Name;
-        TrackResult(key, result);
+        TrackResult(key, result, func.Method.Name);
         return this;
     }
 
@@ -350,21 +312,26 @@ public class FluentExecutor
         }
     }
 
-    private void TrackResult(string key, IResult result)
+    private void TrackResult(string key, IResult result, string funcName)
     {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("key can not be null or empty", key);
+        
+        _context.SetKeyed(key, result);
+
         _result.Reasons.AddRange(result.Reasons);
-    
+
         if (result.IsFailed)
         {
-            _failures.Add(new StepFailure(key, result.Errors));
-    
-            _result.Metadata.FirstFailure ??= key;
-    
-            _events?.OnStepFailure?.Invoke(key, result.Errors);
+            _failures.Add(new StepFailure(funcName, result.Errors));
+
+            _result.Metadata.FirstFailure ??= funcName;
+
+            _events?.OnStepFailure?.Invoke(funcName, result.Errors);
         }
         else
         {
-            _events?.OnStepSuccess?.Invoke(key);
+            _events?.OnStepSuccess?.Invoke(funcName);
         }
     }
 

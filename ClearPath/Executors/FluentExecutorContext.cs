@@ -28,10 +28,23 @@ public class FluentExecutorContext
         throw new KeyNotFoundException($"Type {typeof(T).Name} not found for key {key} in executor context.");
     }
 
+    public IResult GetKeyed(string key)
+    {
+        var combinedKey = GetKey<IResult>(key);
+
+        if (_context.TryGetValue(combinedKey, out var value))
+        {
+            return (IResult)value;
+        }
+
+        throw new KeyNotFoundException($"Type {nameof(IResult)} not found for key {key} in executor context.");
+    }
+
     public void Set<T>(IResult<T> value)
     {
         _context[typeof(T).FullName] = value;
     }
+
     
     public void SetKeyed<T>(string key, IResult<T> value)
     {
@@ -39,7 +52,14 @@ public class FluentExecutorContext
 
         _context[combinedKey] = value;
     }
-    
+
+    public void SetKeyed(string key, IResult value)
+    {
+        var combinedKey = GetKey<IResult>(key);
+
+        _context[combinedKey] = value;
+    }
+
     private static string GetKey<T>(string key)
     {
         return $"{typeof(T).FullName}_{key}";
