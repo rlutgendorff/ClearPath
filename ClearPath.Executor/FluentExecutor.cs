@@ -1,12 +1,8 @@
-﻿using ClearPath.Builders;
+﻿using System.Reflection;
 using ClearPath.Reasons;
 using ClearPath.Results;
-using System;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using static System.Collections.Specialized.BitVector32;
 
-namespace ClearPath.Executors;
+namespace ClearPath.Executor;
 
 public class FluentExecutor
 {

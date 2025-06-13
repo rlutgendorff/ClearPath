@@ -8,4 +8,5 @@
     &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Executors.FluentExecutorTests.FluentExecutor_Then_CallsMethodWithCorrectParameters&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Executors.FluentExecutorTests.FluentExecutor_Then_WithKeyedParameter_CallsMethodWithCorrectParameters&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=02059592_002D5b37_002D48ff_002D8e50_002D13d7d2f5b2ac_0023ClearPath_002ETests/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

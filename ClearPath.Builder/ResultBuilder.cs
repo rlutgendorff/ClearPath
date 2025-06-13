@@ -1,6 +1,6 @@
 ﻿using ClearPath.Results;
 
-namespace ClearPath.Builders;
+namespace ClearPath.Builder;
 
 public class ResultBuilder
 {

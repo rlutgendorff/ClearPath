@@ -1,6 +1,6 @@
 ﻿using ClearPath.Results;
 
-namespace ClearPath.Executors;
+namespace ClearPath.Executor;
 
 public class FluentExecutorContext
 {

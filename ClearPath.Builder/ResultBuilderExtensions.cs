@@ -1,7 +1,6 @@
-﻿using ClearPath.Builders;
-using ClearPath.Results;
+﻿using ClearPath.Results;
 
-namespace ClearPath.Extensions;
+namespace ClearPath.Builder;
 
 public static class ResultBuilderExtensions
 {
