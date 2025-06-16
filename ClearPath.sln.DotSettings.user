@@ -3,6 +3,7 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AList_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F1b81cb3be224213a6a73519b6e340a628d9a1fb8629c351a186a26f6376669_003FList_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	
 	
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=019426a6_002D9176_002D489a_002Db7f1_002D6a7e1ab2c1b9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ResultBuilderTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Builders.ResultBuilderTests&lt;/TestId&gt;&#xD;
@@ -10,4 +11,4 @@
     &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Executors.FluentExecutorTests.FluentExecutor_Then_WithKeyedParameter_CallsMethodWithCorrectParameters&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=02059592_002D5b37_002D48ff_002D8e50_002D13d7d2f5b2ac_0023ClearPath_002ETests/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	</wpf:ResourceDictionary>
