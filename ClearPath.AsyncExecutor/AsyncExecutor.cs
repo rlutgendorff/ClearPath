@@ -388,11 +388,11 @@ public class AsyncExecutor
 
     private Task<IResult<T>> GetValue<T>(ParameterInfo parameter)
     {
-        var key = GeyKey(parameter);
+        var key = GetKey(parameter);
         return _context.Get<T>(key);
     }
 
-    private string GeyKey(ParameterInfo parameter)
+    private string GetKey(ParameterInfo parameter)
     {
         var key = parameter.Name;
 

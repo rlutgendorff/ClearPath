@@ -8,5 +8,5 @@ public class AsyncExecutorEvents
     public Action<string>? OnStepSuccess { get; set; }
     public Action<string, IReadOnlyList<IError>>? OnStepFailure { get; set; }
     
-    public Action<string, Exception> OnException { get; set; }
+    public Action<string, Exception>? OnException { get; set; }
 }

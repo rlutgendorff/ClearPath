@@ -261,11 +261,11 @@ public class FluentExecutor
 
     private T GetValue<T>(ParameterInfo parameter)
     {
-        var key = GeyKey(parameter);
+        var key = GetKey(parameter);
         return string.IsNullOrEmpty(key) ? _context.Get<T>().ValueOrDefault : _context.GetKeyed<T>(key).ValueOrDefault;
     }
 
-    private string? GeyKey(ParameterInfo parameter)
+    private string? GetKey(ParameterInfo parameter)
     {
 
         var attribute = parameter?.GetCustomAttribute<KeyedByParameterNameAttribute>();
