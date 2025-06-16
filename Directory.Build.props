@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>
+        <PackageOutputPath>$(SolutionDir)\nupkgs</PackageOutputPath>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.0.18</Version>
+    </PropertyGroup>
+</Project>

@@ -1,4 +1,4 @@
-﻿using ClearPath.Reasons;
+﻿using IReason = ClearPath.Reasons.IReason;
 
 namespace ClearPath.Results;
 

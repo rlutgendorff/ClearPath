@@ -1,6 +1,6 @@
-﻿using ClearPath.Reasons;
+﻿using IError = ClearPath.Reasons.IError;
 
-namespace ClearPath.Builders;
+namespace ClearPath;
 
 public class StepFailure
 {

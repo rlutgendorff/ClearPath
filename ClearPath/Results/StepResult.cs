@@ -1,5 +1,4 @@
 using ClearPath.Reasons;
-using System.Collections.Generic;
 
 namespace ClearPath.Results;
 
@@ -38,16 +37,15 @@ public class StepResult : Result
 public class StepResult<TValue> : Result<TValue>
 {
     public StepResultMetadata Metadata { get; } = new();
-
-    internal StepResult()
+    public StepResult()
     {
     }
 
-    internal StepResult(Result result) : base(result)
+    public StepResult(Result result) : base(result)
     {
     }
 
-    internal StepResult(TValue value) : base(value)
+    public StepResult(TValue value) : base(value)
     {
     }
 
