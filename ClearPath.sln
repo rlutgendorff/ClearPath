@@ -15,7 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClearPath.Executor", "Clear
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClearPath.Builder", "ClearPath.Builder\ClearPath.Builder.csproj", "{55FFC8B6-5D30-4D2D-BAD9-E2DE403319AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClearPath.Slim", "ClearPath.Slim\ClearPath.Slim.csproj", "{A4520B9D-73E8-4500-88B3-2584B9209CF4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,15 +46,14 @@ Global
 		{55FFC8B6-5D30-4D2D-BAD9-E2DE403319AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55FFC8B6-5D30-4D2D-BAD9-E2DE403319AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55FFC8B6-5D30-4D2D-BAD9-E2DE403319AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4520B9D-73E8-4500-88B3-2584B9209CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4520B9D-73E8-4500-88B3-2584B9209CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4520B9D-73E8-4500-88B3-2584B9209CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4520B9D-73E8-4500-88B3-2584B9209CF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{02059592-5B37-48FF-8E50-13D7D2F5B2AC} = {88FC3F22-BED1-438C-938F-C9B31BC15004}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5A1E6FDC-BC70-432A-976D-B886A0C286F6}
 	EndGlobalSection
 EndGlobal

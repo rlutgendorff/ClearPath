@@ -1,4 +1,4 @@
-﻿using ClearPath.Reasons;
+﻿using IError = ClearPath.Reasons.IError;
 
 namespace ClearPath;
 

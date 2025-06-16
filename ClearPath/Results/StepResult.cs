@@ -1,5 +1,4 @@
 using ClearPath.Reasons;
-using System.Collections.Generic;
 
 namespace ClearPath.Results;
 
