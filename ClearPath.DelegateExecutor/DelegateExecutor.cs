@@ -10,70 +10,71 @@ public class DelegateExecutor
     private readonly List<StepResult> _steps = new();
     private bool HasFailed => _steps.Any(s => !s.IsSuccess);
 
-    public static DelegateExecutor StartWith(string key, object value)
+    public static DelegateExecutor StartWith<T>(string key, T value)
     {
         var exec = new DelegateExecutor();
-        exec._results[key] = WrapInResult(value);
+        exec._results[key] = WrapInResult(value, typeof(T));
         return exec;
     }
 
     public async Task<DelegateExecutor> Then(Delegate @delegate)
     {
-        if (HasFailed) return this;
+        return null;
+        //if (HasFailed) return this;
 
-        var method = @delegate.GetMethodInfo();
-        var returnKeyAttr = method.GetCustomAttribute<ReturnTypeKeyAttribute>();
-        if (returnKeyAttr == null)
-            throw new InvalidOperationException($"Missing ReturnTypeKey on method {method.Name}");
+        //var method = @delegate.GetMethodInfo();
+        //var returnKeyAttr = method.GetCustomAttribute<ReturnTypeKeyAttribute>();
+        //if (returnKeyAttr == null && method.ReturnType != typeof(void))
+        //    throw new InvalidOperationException($"Missing ReturnTypeKey on method {method.Name}");
 
-        var parameters = method.GetParameters();
-        var args = new List<object>();
-        var paramKeys = new List<string>();
+        //var parameters = method.GetParameters();
+        //var args = new List<object>();
+        //var paramKeys = new List<string>();
 
-        foreach (var parameterInfo in parameters)
-        {
-            var param = await GetParameter(parameterInfo);
-            paramKeys.Add(parameterInfo.Name!);
+        //foreach (var parameterInfo in parameters)
+        //{
+        //    var param = await GetParameter(parameterInfo);
+        //    paramKeys.Add(parameterInfo.Name!);
 
-            if (param == null)
-            {
-                args.Add(null!);
-            }
-            else if (param.GetType().GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IResult<>)))
-            {
-                var valueProp = param.GetType().GetProperty("Value");
-                args.Add(valueProp?.GetValue(param));
-            }
-            else
-            {
-                args.Add(param);
-            }
-        }
+        //    if (param == null)
+        //    {
+        //        args.Add(null!);
+        //    }
+        //    else if (param.GetType().GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IResult<>)))
+        //    {
+        //        var valueProp = param.GetType().GetProperty("Value");
+        //        args.Add(valueProp?.GetValue(param));
+        //    }
+        //    else
+        //    {
+        //        args.Add(param);
+        //    }
+        //}
 
-        var resolvedTask = Task.Run(async () =>
-        {
-            var result = @delegate.DynamicInvoke(args.ToArray());
+        //var resolvedTask = Task.Run(async () =>
+        //{
+        //    var result = @delegate.DynamicInvoke(args.ToArray());
 
-            if (result is Task task)
-            {
-                await task.ConfigureAwait(false);
-                var resultProp = task.GetType().GetProperty("Result");
-                var value = resultProp?.GetValue(task);
-                return WrapInResult(value);
-            }
+        //    if (result is Task task)
+        //    {
+        //        await task.ConfigureAwait(false);
+        //        var resultProp = task.GetType().GetProperty("Result");
+        //        var value = resultProp?.GetValue(task);
+        //        return WrapInResult(value);
+        //    }
 
-            return WrapInResult(result);
-        });
+        //    return WrapInResult(result);
+        //});
 
-        _steps.Add(new StepResult
-        {
-            ReturnKey = returnKeyAttr.Key,
-            ResolvedTask = resolvedTask,
-            MethodName = method.Name,
-            ParameterKeys = paramKeys
-        });
+        //_steps.Add(new StepResult
+        //{
+        //    ReturnKey = returnKeyAttr.Key,
+        //    ResolvedTask = resolvedTask,
+        //    MethodName = method.Name,
+        //    ParameterKeys = paramKeys
+        //});
 
-        return this;
+        //return this;
     }
 
     public async Task<object?> Result(string key)
@@ -98,9 +99,9 @@ public class DelegateExecutor
         return await Result(key);
     }
 
-    private static object WrapInResult(object? value)
+    private static object WrapInResult(object? value, Type valueType)
     {
-        if (value is null) return Activator.CreateInstance(typeof(Result<>).MakeGenericType(typeof(object)), value)!;
+        if (value is null) return Activator.CreateInstance(typeof(Result<>).MakeGenericType(valueType), value)!;
 
         var type = value.GetType();
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>)) return value;

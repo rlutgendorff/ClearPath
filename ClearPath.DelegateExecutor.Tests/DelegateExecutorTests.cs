@@ -14,16 +14,31 @@ namespace ClearPath.DelegateExecutor.Tests
                 .Then(CreateTest2);
         }
 
+        [Fact]
+        public async Task Test2()
+        {
+            var userId = Guid.NewGuid();
+            await DelegateExecutor.StartWith("userId", userId)
+                .Then(CreateTest)
+                .Then(CreateTest2)
+                .Then(CreateTest3);
+        }
+
         [ReturnTypeKey("test")]
-        public Task<IResult<Test>> CreateTest(Guid userId)
+        private Task<IResult<Test>> CreateTest(Guid userId)
         {
             return Task.FromResult<IResult<Test>>(Result.Ok(new Test { Name = userId.ToString() }));
         }
 
         [ReturnTypeKey("result")]
-        public Task<IResult<string>> CreateTest2(Test test)
+        private Task<IResult<string>> CreateTest2(Test test)
         {
             return Task.FromResult<IResult<string>>(Result.Ok(test.Name));
+        }
+
+        private void CreateTest3(string result)
+        {
+            Console.WriteLine($"Result: {result}");
         }
     }
 
