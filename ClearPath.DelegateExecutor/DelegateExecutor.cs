@@ -6,136 +6,116 @@ namespace ClearPath.DelegateExecutor;
 
 public class DelegateExecutor
 {
-    private readonly DelegateExecutorContext _context = new();
+    private readonly Dictionary<string, object> _results = new();
+    private readonly List<StepResult> _steps = new();
+    private bool HasFailed => _steps.Any(s => !s.IsSuccess);
 
-    private DelegateExecutor() { }
-
-
-    private bool HasFailed => _stepResults.Any(s => s is { IsSuccess: false });
-
-
-    private readonly List<StepResult> _stepResults = new();
-
-    public static DelegateExecutor StartWith<T>(string key, T value)
+    public static DelegateExecutor StartWith(string key, object value)
     {
-        return StartWith<T>(key, Result.Ok(value));
+        var exec = new DelegateExecutor();
+        exec._results[key] = WrapInResult(value);
+        return exec;
     }
 
-    public static DelegateExecutor StartWith<T>(string key, IResult<T> result)
-    {
-        return StartWith(key, Task.FromResult((IResult)result), typeof(T));
-    }
-
-    public static DelegateExecutor StartWith(string key, Task<IResult> resultTask, Type type)
-    {
-        var executor = new DelegateExecutor();
-        executor.TrackResult(key, resultTask, type);
-        executor.AddKeyedVariable("executorContext", executor._context);
-        return executor;
-    }
-
-    #region AddKeyedVariable
-
-    public DelegateExecutor AddKeyedVariable<T>(string key, T value)
-    {
-        return AddKeyedVariable(key, Result.Ok((object)value), typeof(T));
-    }
-
-    public DelegateExecutor AddKeyedVariable(string key, IResult result, Type type)
-    {
-        return AddKeyedVariable(key, Task.FromResult(result), type);
-    }
-
-    public DelegateExecutor AddKeyedVariable(string key, Task<IResult> resultTask, Type type)
-    {
-        if (HasFailed) return this;
-        _context.Set(key, resultTask, type);
-        return this;
-    }
-
-    #endregion
-
-    public async Task<DelegateExecutor> Then(string key, Delegate @delegate, CancellationToken cancellationToken = default)
+    public async Task<DelegateExecutor> Then(Delegate @delegate)
     {
         if (HasFailed) return this;
 
-            
         var method = @delegate.GetMethodInfo();
-        var parameters = method.GetParameters();
+        var returnKeyAttr = method.GetCustomAttribute<ReturnTypeKeyAttribute>();
+        if (returnKeyAttr == null)
+            throw new InvalidOperationException($"Missing ReturnTypeKey on method {method.Name}");
 
+        var parameters = method.GetParameters();
         var args = new List<object>();
-            
+        var paramKeys = new List<string>();
+
         foreach (var parameterInfo in parameters)
         {
             var param = await GetParameter(parameterInfo);
+            paramKeys.Add(parameterInfo.Name!);
 
-            if (param.GetType().IsGenericType)
+            if (param == null)
             {
-                var result = ((dynamic)param).Value;
-                args.Add(result);
+                args.Add(null!);
+            }
+            else if (param.GetType().GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IResult<>)))
+            {
+                var valueProp = param.GetType().GetProperty("Value");
+                args.Add(valueProp?.GetValue(param));
+            }
+            else
+            {
+                args.Add(param);
             }
         }
 
-        var response = @delegate.DynamicInvoke(args.ToArray());
+        var resolvedTask = Task.Run(async () =>
+        {
+            var result = @delegate.DynamicInvoke(args.ToArray());
 
-        var returnType = @delegate.Method.ReturnType;
-        
-        if(response is Task<IResult> task)
-            TrackResult(key, task, returnType);
+            if (result is Task task)
+            {
+                await task.ConfigureAwait(false);
+                var resultProp = task.GetType().GetProperty("Result");
+                var value = resultProp?.GetValue(task);
+                return WrapInResult(value);
+            }
+
+            return WrapInResult(result);
+        });
+
+        _steps.Add(new StepResult
+        {
+            ReturnKey = returnKeyAttr.Key,
+            ResolvedTask = resolvedTask,
+            MethodName = method.Name,
+            ParameterKeys = paramKeys
+        });
 
         return this;
     }
 
-    private void TrackResult(
-        string key, Task<IResult> result,
-        Type type,
-        string? methodName = null,
-        string? compensationKey = null,
-        Func<DelegateExecutor, Task<IResult>>? compensationFunc = null)
+    public async Task<object?> Result(string key)
     {
-        if (_stepResults.Any(r => r.Key == key))
-            throw new InvalidOperationException($"Step key '{key}' is already used in the executor. All step keys must be unique.");
+        if (_results.ContainsKey(key))
+            return _results[key];
 
-        var stepResult = new StepResult
-        {
-            Key = key,
-            MethodName = methodName,
-        };
-        _stepResults.Add(stepResult);
+        var step = _steps.FirstOrDefault(s => s.ReturnKey == key);
+        if (step == null)
+            throw new InvalidOperationException($"No step found for key: {key}");
 
-        _context.Set(key, result, type);
-
-        result.ContinueWith(task =>
-        {
-            if (!task.Result.IsSuccess)
-            {
-                stepResult.Errors = task.Result.Errors;
-            }
-            else
-            {
-                stepResult.Errors = null;
-            }
-        });
+        var output = await step.ResolvedTask;
+        _results[key] = output;
+        return output;
     }
 
-    private async Task<IResult> GetParameter(ParameterInfo info)
+    private async Task<object?> GetParameter(ParameterInfo parameterInfo)
     {
-        var result = await GetValue(info);
+        var key = parameterInfo.Name;
+        if (string.IsNullOrEmpty(key)) return null;
 
-        return result;
-    }
-    
-    private Task<IResult> GetValue(ParameterInfo parameter)
-    {
-        var key = parameter.Name; //GetKey(parameter);
-        return _context.Get(key!, parameter.ParameterType);
+        return await Result(key);
     }
 
-    // private string GetKey(ParameterInfo parameter)
-    // {
-    //     var attr = parameter.GetCustomAttribute<KeyedByAttribute>();
-    //     return attr?.Key ?? parameter.Name!;
-    // }
+    private static object WrapInResult(object? value)
+    {
+        if (value is null) return Activator.CreateInstance(typeof(Result<>).MakeGenericType(typeof(object)), value)!;
 
+        var type = value.GetType();
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Result<>)) return value;
+        if (type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IResult<>))) return value;
 
+        return Results.Result.Ok((dynamic)value);
+    }
+}
+
+public static class DelegateExecutorExtensions
+{
+    public static async Task<DelegateExecutor> Then(this Task<DelegateExecutor> task, Delegate @delegate)
+    {
+        var executor = await task;
+
+        return await executor.Then(@delegate);
+    }
 }

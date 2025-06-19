@@ -30,7 +30,7 @@ public class DelegateExecutorContext
         throw new KeyNotFoundException($"Type IResult not found for key {key} in executor context.");
     }
 
-    public void Set(string key, Task<IResult> value, Type type)
+    public void Set(string key, Task value, Type type)
     {
         var combinedKey = GetKey(key, type);
 
