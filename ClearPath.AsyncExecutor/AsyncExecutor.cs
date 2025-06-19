@@ -22,7 +22,7 @@ public class AsyncExecutor
 
     private bool _outputCachingEnabled;
 
-    private AsyncExecutor() { }
+    private AsyncExecutor() {}
 
     internal AsyncExecutor(AsyncExecutorContext context)
     {
@@ -612,7 +612,18 @@ public class AsyncExecutor
     }
 
     #endregion
-    
+
+    #region OnFailure
+
+    public async Task<AsyncExecutor> OnFailure(Func<AsyncExecutorContext, Task> onFailure)
+    {
+        if (HasFailed) await onFailure(_context);
+
+        return this;
+    }
+
+    #endregion
+
     public AsyncExecutor WithEvents(AsyncExecutorEvents events)
     {
         _events = events;

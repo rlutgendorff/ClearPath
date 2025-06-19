@@ -206,6 +206,12 @@ public static class AsyncExecutorExtensions
         return await executor.FinishAll();
     }
     
+    public static async Task<AsyncExecutor> OnFailure(this Task<AsyncExecutor> task, Func<AsyncExecutorContext, Task> onFailure)
+    {
+        var executor = await task;
+        return await executor.OnFailure(onFailure);
+    }
+
     public static async Task<IResult> GetResult(this Task<AsyncExecutor> task)
     {
         var executor = await task;

@@ -4,11 +4,21 @@
 	
 	
 	
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=019426a6_002D9176_002D489a_002Db7f1_002D6a7e1ab2c1b9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ResultBuilderTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Builders.ResultBuilderTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Executors.FluentExecutorTests.FluentExecutor_Then_CallsMethodWithCorrectParameters&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::02059592-5B37-48FF-8E50-13D7D2F5B2AC::net9.0::ClearPath.Tests.Executors.FluentExecutorTests.FluentExecutor_Then_WithKeyedParameter_CallsMethodWithCorrectParameters&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::049C77E4-61F1-4B3C-91E3-DDFE1011E1DA::net9.0::ClearPath.AsyncExecutor.Tests.AsyncExecutorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::A94E4ECD-2590-4E51-8C19-E8CD7AD1769F::net9.0::ClearPath.DelegateExecutor.Tests.DelegateExecutorTests.Test1&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a651d441_002Dd755_002D46ec_002D8d2e_002Ddad415837e90/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::A94E4ECD-2590-4E51-8C19-E8CD7AD1769F::net9.0::ClearPath.DelegateExecutor.Tests.DelegateExecutorTests.Test1&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f568f899_002Dfe00_002D4802_002Db996_002Dec460dd93cb8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::A94E4ECD-2590-4E51-8C19-E8CD7AD1769F::net9.0::ClearPath.DelegateExecutor.Tests.DelegateExecutorTests.Test1&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

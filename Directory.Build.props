@@ -2,6 +2,6 @@
     <PropertyGroup>
         <PackageOutputPath>$(SolutionDir)\nupkgs</PackageOutputPath>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>0.0.0.18</Version>
+        <Version>0.0.0.23</Version>
     </PropertyGroup>
 </Project>
