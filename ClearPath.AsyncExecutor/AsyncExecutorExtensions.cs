@@ -14,7 +14,7 @@ public static class AsyncExecutorExtensions
     }
 
     public static async Task<AsyncExecutor> AddKeyedVariable<T>(this Task<AsyncExecutor> task, string key,
-        IResult<T> result)
+        Result<T> result)
     {
         var executor = await task;
         return executor.AddKeyedVariable(key, result);
@@ -22,25 +22,25 @@ public static class AsyncExecutorExtensions
 
 
     public static async Task<AsyncExecutor> AddKeyedVariable<T>(this Task<AsyncExecutor> task, string key,
-        Task<IResult<T>> resultTask)
+        Task<Result<T>> resultTask)
     {
         var executor = await task;
         return executor.AddKeyedVariable(key, resultTask);
     }
 
-    public static async Task<AsyncExecutor> Then<TOut>(this Task<AsyncExecutor> task, string key, Func<CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public static async Task<AsyncExecutor> Then<TOut>(this Task<AsyncExecutor> task, string key, Func<CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         var executor = await task;
         return await executor.Then(key, stepFunc, policy, cancellationToken);
     }
 
-    public static async Task<AsyncExecutor> Then<T1, TOut>(this Task<AsyncExecutor> task, string key, Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public static async Task<AsyncExecutor> Then<T1, TOut>(this Task<AsyncExecutor> task, string key, Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         var executor = await task;
         return await executor.Then(key, stepFunc, policy, cancellationToken);
     }
 
-    public static async Task<AsyncExecutor> Then<T1, T2, TOut>(this Task<AsyncExecutor> task, string key, Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public static async Task<AsyncExecutor> Then<T1, T2, TOut>(this Task<AsyncExecutor> task, string key, Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         var executor = await task;
         return await executor.Then(key, stepFunc, policy, cancellationToken);
@@ -49,7 +49,7 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> Then<T1, T2, T3, TOut>(
         this Task<AsyncExecutor> task,
         string key,
-        Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -60,9 +60,9 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> ThenWithCompensation<TOut> (
         this Task<AsyncExecutor> task,
         string key,
-        Func<CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<CancellationToken, Task<Result<TOut>>> stepFunc,
         string compensationKey,
-        Func<AsyncExecutorContext, Task<IResult>> compensationFunc,
+        Func<AsyncExecutorContext, Task<Result>> compensationFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -71,9 +71,9 @@ public static class AsyncExecutorExtensions
     }
     public static async Task<AsyncExecutor> ThenWithCompensation<T1, TOut>(
         this Task<AsyncExecutor> task, string key,
-        Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc,
         string compensationKey,
-        Func<AsyncExecutorContext, Task<IResult>> compensationFunc,
+        Func<AsyncExecutorContext, Task<Result>> compensationFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -84,9 +84,9 @@ public static class AsyncExecutorExtensions
     
     public static async Task<AsyncExecutor> ThenWithCompensation<T1, T2, TOut>(
         this Task<AsyncExecutor> task, string key,
-        Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc,
         string compensationKey,
-        Func<AsyncExecutorContext, Task<IResult>> compensationFunc,
+        Func<AsyncExecutorContext, Task<Result>> compensationFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -98,9 +98,9 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> ThenWithCompensation<T1, T2, T3, TOut>(
         this Task<AsyncExecutor> task,
         string key,
-        Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc, 
+        Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc, 
         string compensationKey,
-        Func<AsyncExecutorContext, Task<IResult>> compensationFunc,
+        Func<AsyncExecutorContext, Task<Result>> compensationFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -113,7 +113,7 @@ public static class AsyncExecutorExtensions
         this Task<AsyncExecutor> task, string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<CancellationToken, Task<Result<TOut>>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -125,7 +125,7 @@ public static class AsyncExecutorExtensions
         this Task<AsyncExecutor> task, string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -137,7 +137,7 @@ public static class AsyncExecutorExtensions
         this Task<AsyncExecutor> task, string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -149,7 +149,7 @@ public static class AsyncExecutorExtensions
         this Task<AsyncExecutor> task, string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc,
+        Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -159,7 +159,7 @@ public static class AsyncExecutorExtensions
 
     public static async Task<AsyncExecutor> Do(
         this Task<AsyncExecutor> task, string key,
-        Func<CancellationToken, Task<IResult>> stepFunc,
+        Func<CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -170,7 +170,7 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> Do<T1>(
         this Task<AsyncExecutor> task,
         string key, 
-        Func<T1, CancellationToken, Task<IResult>> stepFunc,
+        Func<T1, CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null, 
         CancellationToken cancellationToken = default)
     {
@@ -181,7 +181,7 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> Do<T1, T2>(
         this Task<AsyncExecutor> task,
         string key,
-        Func<T1, T2, CancellationToken, Task<IResult>> stepFunc,
+        Func<T1, T2, CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -192,7 +192,7 @@ public static class AsyncExecutorExtensions
     public static async Task<AsyncExecutor> Do<T1, T2, T3>(
         this Task<AsyncExecutor> task,
         string key,
-        Func<T1, T2, T3, CancellationToken, Task<IResult>> stepFunc,
+        Func<T1, T2, T3, CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -212,13 +212,13 @@ public static class AsyncExecutorExtensions
         return await executor.OnFailure(onFailure);
     }
 
-    public static async Task<IResult> GetResult(this Task<AsyncExecutor> task)
+    public static async Task<Result> GetResult(this Task<AsyncExecutor> task)
     {
         var executor = await task;
         return await executor.GetResult();
     }
     
-    public static async Task<IResult<T>> GetResult<T>(this Task<AsyncExecutor> task, string key)
+    public static async Task<Result<T>> GetResult<T>(this Task<AsyncExecutor> task, string key)
     {
         var executor = await task;
         return await executor.GetResult<T>(key);

@@ -10,6 +10,6 @@ public class AsyncStepResult
     public IReadOnlyList<IError>? Errors { get; set; }
     public bool IsSuccess => Errors == null || Errors.Count == 0;
 
-    public Func<AsyncExecutorContext, Task<IResult>>? Compensation { get; set; }
+    public Func<AsyncExecutorContext, Task<Result>>? Compensation { get; set; }
     public string? CompensationKey { get; set; }
 }

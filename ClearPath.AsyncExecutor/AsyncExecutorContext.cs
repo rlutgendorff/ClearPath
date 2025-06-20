@@ -9,40 +9,40 @@ public class AsyncExecutorContext
     private readonly Dictionary<string, IValidator> _validators = new();
     private readonly Dictionary<string, object> _stepResultCache = new();
 
-    public Task<IResult<T>> Get<T>(string key)
+    public Task<Result<T>> Get<T>(string key)
     {
         var combinedKey = GetKey<T>(key);
 
         if (_context.TryGetValue(combinedKey, out var value))
         {
-            return (Task<IResult<T>>)value;
+            return (Task<Result<T>>)value;
         }
 
         throw new KeyNotFoundException($"Type {typeof(T).Name} not found for key {key} in executor context.");
     }
 
-    public Task<IResult> Get(string key)
+    public Task<Result> Get(string key)
     {
-        var combinedKey = GetKey<IResult>(key);
+        var combinedKey = GetKey<Result>(key);
 
         if (_context.TryGetValue(combinedKey, out var value))
         {
-            return (Task<IResult>)value;
+            return (Task<Result>)value;
         }
 
         throw new KeyNotFoundException($"Type IResult not found for key {key} in executor context.");
     }
 
-    public void Set<T>(string key, Task<IResult<T>> value)
+    public void Set<T>(string key, Task<Result<T>> value)
     {
         var combinedKey = GetKey<T>(key);
 
         _context[combinedKey] = value;
     }
     
-    public void Set(string key, Task<IResult> value)
+    public void Set(string key, Task<Result> value)
     {
-        var combinedKey = GetKey<IResult>(key);
+        var combinedKey = GetKey<Result>(key);
         _context[combinedKey] = value;
     }
     

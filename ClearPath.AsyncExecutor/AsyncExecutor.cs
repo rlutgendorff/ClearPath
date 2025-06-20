@@ -36,12 +36,12 @@ public class AsyncExecutor
         return StartWith<T>(key, Result.Ok(value), events);
     }
 
-    public static AsyncExecutor StartWith<T>(string key, IResult<T> result, AsyncExecutorEvents? events = null, IAsyncPolicy? policy = null)
+    public static AsyncExecutor StartWith<T>(string key, Result<T> result, AsyncExecutorEvents? events = null, IAsyncPolicy? policy = null)
     {
         return StartWith(key, Task.FromResult(result), events);
     }
 
-    public static AsyncExecutor StartWith<T>(string key, Task<IResult<T>> resultTask, AsyncExecutorEvents? events = null, IAsyncPolicy? policy = null)
+    public static AsyncExecutor StartWith<T>(string key, Task<Result<T>> resultTask, AsyncExecutorEvents? events = null, IAsyncPolicy? policy = null)
     {
         var executor = new AsyncExecutor();
         executor.TrackResult(key, resultTask);
@@ -60,12 +60,12 @@ public class AsyncExecutor
         return AddKeyedVariable<T>(key, Result.Ok(value));
     }
 
-    public AsyncExecutor AddKeyedVariable<T>(string key, IResult<T> result)
+    public AsyncExecutor AddKeyedVariable<T>(string key, Result<T> result)
     {
         return AddKeyedVariable(key, Task.FromResult(result));
     }
 
-    public AsyncExecutor AddKeyedVariable<T>(string key, Task<IResult<T>> resultTask)
+    public AsyncExecutor AddKeyedVariable<T>(string key, Task<Result<T>> resultTask)
     {
         if (HasFailed) return this;
         _context.Set(key, resultTask);
@@ -76,7 +76,7 @@ public class AsyncExecutor
 
     #region Then
 
-    public Task<AsyncExecutor> Then<TOut>(string key, Func<CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public Task<AsyncExecutor> Then<TOut>(string key, Func<CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -86,11 +86,11 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return Task.FromResult(this);
             }
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if(policy != null)
                 policy.ExecuteAsync(() => stepFunc(cancellationToken));
             else if(_policy != null)
@@ -112,7 +112,7 @@ public class AsyncExecutor
 
     }
 
-    public async Task<AsyncExecutor> Then<T1, TOut>(string key, Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> Then<T1, TOut>(string key, Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -122,7 +122,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -132,7 +132,7 @@ public class AsyncExecutor
             var par1 = await GetParameter<T1>(parameters[0]);
             if (!par1.IsSuccess) return this;
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, cancellationToken));
             else if (_policy != null)
@@ -152,7 +152,7 @@ public class AsyncExecutor
         }
     }
 
-    public async Task<AsyncExecutor> Then<T1, T2, TOut>(string key, Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> Then<T1, T2, TOut>(string key, Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -162,7 +162,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -174,7 +174,7 @@ public class AsyncExecutor
             var par2 = await GetParameter<T2>(parameters[1]);
             if (!par2.IsSuccess) return this;
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, cancellationToken));
             else if (_policy != null)
@@ -194,7 +194,7 @@ public class AsyncExecutor
         }
     }
 
-    public async Task<AsyncExecutor> Then<T1, T2, T3, TOut>(string key, Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> Then<T1, T2, T3, TOut>(string key, Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -204,7 +204,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -218,7 +218,7 @@ public class AsyncExecutor
             var par3 = await GetParameter<T3>(parameters[2]);
             if (!par3.IsSuccess) return this;
             
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, par3.Value, cancellationToken));
             else if (_policy != null)
@@ -242,7 +242,7 @@ public class AsyncExecutor
 
     #region ThenWithCompensation
 
-    public Task<AsyncExecutor> ThenWithCompensation<TOut>(string key, Func<CancellationToken, Task<IResult<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<IResult>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public Task<AsyncExecutor> ThenWithCompensation<TOut>(string key, Func<CancellationToken, Task<Result<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<Result>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -252,11 +252,11 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return Task.FromResult(this);
             }
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(cancellationToken));
             else if (_policy != null)
@@ -277,7 +277,7 @@ public class AsyncExecutor
 
     }
 
-    public async Task<AsyncExecutor> ThenWithCompensation<T1, TOut>(string key, Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<IResult>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> ThenWithCompensation<T1, TOut>(string key, Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<Result>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -287,7 +287,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -297,7 +297,7 @@ public class AsyncExecutor
             var par1 = await GetParameter<T1>(parameters[0]);
             if (!par1.IsSuccess) return this;
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, cancellationToken));
             else if (_policy != null)
@@ -317,7 +317,7 @@ public class AsyncExecutor
         }
     }
 
-    public async Task<AsyncExecutor> ThenWithCompensation<T1, T2, TOut>(string key, Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<IResult>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> ThenWithCompensation<T1, T2, TOut>(string key, Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<Result>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -327,7 +327,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -339,7 +339,7 @@ public class AsyncExecutor
             var par2 = await GetParameter<T2>(parameters[1]);
             if (!par2.IsSuccess) return this;
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, cancellationToken));
             else if (_policy != null)
@@ -359,7 +359,7 @@ public class AsyncExecutor
         }
     }
 
-    public async Task<AsyncExecutor> ThenWithCompensation<T1, T2, T3, TOut>(string key, Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<IResult>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> ThenWithCompensation<T1, T2, T3, TOut>(string key, Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc, string compensationKey, Func<AsyncExecutorContext, Task<Result>> compensationFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -369,7 +369,7 @@ public class AsyncExecutor
 
             if (_outputCachingEnabled && _context.TryGetCacheItem<TOut>(key, out var cachedItem))
             {
-                TrackResult(key, Task.FromResult<IResult>(Result.Ok(cachedItem)), stepFunc.Method.Name);
+                TrackResult(key, Task.FromResult<Result>(Result.Ok(cachedItem)), stepFunc.Method.Name);
                 return this;
             }
 
@@ -383,7 +383,7 @@ public class AsyncExecutor
             var par3 = await GetParameter<T3>(parameters[2]);
             if (!par3.IsSuccess) return this;
 
-            Task<IResult<TOut>> result = null!;
+            Task<Result<TOut>> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, par3.Value, cancellationToken));
             else if (_policy != null)
@@ -411,7 +411,7 @@ public class AsyncExecutor
         string key, 
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,  
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<CancellationToken, Task<IResult<TOut>>> stepFunc, 
+        Func<CancellationToken, Task<Result<TOut>>> stepFunc, 
         IAsyncPolicy? policy = null, 
         CancellationToken cancellationToken = default)
     {
@@ -424,7 +424,7 @@ public class AsyncExecutor
         string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, CancellationToken, Task<IResult<TOut>>> stepFunc, 
+        Func<T1, CancellationToken, Task<Result<TOut>>> stepFunc, 
         IAsyncPolicy? policy = null, 
         CancellationToken cancellationToken = default)
     {
@@ -437,7 +437,7 @@ public class AsyncExecutor
         string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, T2, CancellationToken, Task<IResult<TOut>>> stepFunc, 
+        Func<T1, T2, CancellationToken, Task<Result<TOut>>> stepFunc, 
         IAsyncPolicy? policy = null, 
         CancellationToken cancellationToken = default)
     {
@@ -450,7 +450,7 @@ public class AsyncExecutor
         string key,
         Func<AsyncExecutorContext, CancellationToken, bool> ifPredicate,
         Func<AsyncExecutorContext, CancellationToken, bool> skipIfPredicate,
-        Func<T1, T2, T3, CancellationToken, Task<IResult<TOut>>> stepFunc, 
+        Func<T1, T2, T3, CancellationToken, Task<Result<TOut>>> stepFunc, 
         IAsyncPolicy? policy = null, 
         CancellationToken cancellationToken = default)
     {
@@ -463,7 +463,7 @@ public class AsyncExecutor
 
     #region Do
 
-    public Task<AsyncExecutor> Do(string key, Func<CancellationToken, Task<IResult>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public Task<AsyncExecutor> Do(string key, Func<CancellationToken, Task<Result>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -474,7 +474,7 @@ public class AsyncExecutor
 
             var method = stepFunc.GetMethodInfo();
 
-            Task<IResult> result = null!;
+            Task<Result> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(cancellationToken));
             else if (_policy != null)
@@ -494,7 +494,7 @@ public class AsyncExecutor
         }
     }
 
-    public async Task<AsyncExecutor> Do<T1>(string key, Func<T1, CancellationToken, Task<IResult>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
+    public async Task<AsyncExecutor> Do<T1>(string key, Func<T1, CancellationToken, Task<Result>> stepFunc, IAsyncPolicy? policy = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -509,7 +509,7 @@ public class AsyncExecutor
             var par1 = await GetParameter<T1>(parameters[0]);
             if (!par1.IsSuccess) return this;
 
-            Task<IResult> result = null!;
+            Task<Result> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, cancellationToken));
             else if (_policy != null)
@@ -530,7 +530,7 @@ public class AsyncExecutor
     }
 
     public async Task<AsyncExecutor> Do<T1, T2>(
-        string key, Func<T1, T2, CancellationToken, Task<IResult>> stepFunc,
+        string key, Func<T1, T2, CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -549,7 +549,7 @@ public class AsyncExecutor
             var par2 = await GetParameter<T2>(parameters[1]);
             if (!par2.IsSuccess) return this;
 
-            Task<IResult> result = null!;
+            Task<Result> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, cancellationToken));
             else if (_policy != null)
@@ -570,7 +570,7 @@ public class AsyncExecutor
     }
 
     public async Task<AsyncExecutor> Do<T1, T2, T3>(
-        string key, Func<T1, T2, T3, CancellationToken, Task<IResult>> stepFunc,
+        string key, Func<T1, T2, T3, CancellationToken, Task<Result>> stepFunc,
         IAsyncPolicy? policy = null,
         CancellationToken cancellationToken = default)
     {
@@ -591,7 +591,7 @@ public class AsyncExecutor
             var par3 = await GetParameter<T3>(parameters[2]);
             if (!par3.IsSuccess) return this;
 
-            Task<IResult> result = null!;
+            Task<Result> result = null!;
             if (policy != null)
                 policy.ExecuteAsync(() => stepFunc(par1.Value, par2.Value, par3.Value, cancellationToken));
             else if (_policy != null)
@@ -648,20 +648,20 @@ public class AsyncExecutor
         return this;
     }
 
-    public Task<IResult> GetResult()
+    public Task<Result> GetResult()
     {
         var failedSteps = _stepResults.Where(s => s is { IsSuccess: false, Errors: not null }).ToList();
 
         if (failedSteps.Count > 0)
         {
             var allErrors = failedSteps.SelectMany(s => s.Errors!).ToList();
-            return Task.FromResult<IResult>(Result.Fail(allErrors));
+            return Task.FromResult<Result>(Result.Fail(allErrors));
         }
 
-        return Task.FromResult<IResult>(Result.Ok());
+        return Task.FromResult<Result>(Result.Ok());
     }
 
-    public async Task<IResult<T>> GetResult<T>(string key)
+    public async Task<Result<T>> GetResult<T>(string key)
     {
         var failedSteps = _stepResults.Where(s => s is { IsSuccess: false, Errors: not null }).ToList();
 
@@ -694,7 +694,7 @@ public class AsyncExecutor
             catch (Exception ex)
             {
                 // Replace this with your own error/result logic
-                return (IResult<TOut>) Result<TOut>.Fail([new MappingError { Message = ex.Message }]);
+                return Result<TOut>.Fail([new MappingError { Message = ex.Message }]);
             }
         });
 
@@ -728,7 +728,7 @@ public class AsyncExecutor
             }
             catch (Exception ex)
             {
-                return (IResult<TOut>)Result<TOut>.Fail([new MappingError{Message = ex.Message}]);
+                return Result<TOut>.Fail([new MappingError{Message = ex.Message}]);
             }
         }).Unwrap();
 
@@ -778,10 +778,10 @@ public class AsyncExecutor
 
     private void TrackResult<T>(
         string key,
-        Task<IResult<T>> result,
+        Task<Result<T>> result,
         string? methodName = null,
         string? compensationKey = null,
-        Func<AsyncExecutorContext, Task<IResult>>? compensationFunc = null)
+        Func<AsyncExecutorContext, Task<Result>>? compensationFunc = null)
     {
         if (_stepResults.Any(r => r.Key == key))
             throw new InvalidOperationException($"Step key '{key}' is already used in the executor. All step keys must be unique.");
@@ -814,10 +814,10 @@ public class AsyncExecutor
 
 
     private void TrackResult(
-        string key, Task<IResult> result, 
+        string key, Task<Result> result, 
         string? methodName = null, 
         string? compensationKey = null, 
-        Func<AsyncExecutorContext, Task<IResult>>? compensationFunc = null)
+        Func<AsyncExecutorContext, Task<Result>>? compensationFunc = null)
     {
         if (_stepResults.Any(r => r.Key == key))
             throw new InvalidOperationException($"Step key '{key}' is already used in the executor. All step keys must be unique.");
@@ -849,7 +849,7 @@ public class AsyncExecutor
     }
 
 
-    private async Task<IResult<T>> GetParameter<T>(ParameterInfo info)
+    private async Task<Result<T>> GetParameter<T>(ParameterInfo info)
     {
         var result = await GetValue<T>(info);
         
@@ -873,7 +873,7 @@ public class AsyncExecutor
     }
 
 
-    private Task<IResult<T>> GetValue<T>(ParameterInfo parameter)
+    private Task<Result<T>> GetValue<T>(ParameterInfo parameter)
     {
         var key = GetKey(parameter);
         return _context.Get<T>(key);

@@ -62,15 +62,15 @@ public class AsyncExecutorTests
     public async Task Then_ExecutesStep()
     {
         var executor = AsyncExecutor.StartWith("key", 1);
-        await executor.Then("next", ct => Task.FromResult<IResult<int>>(Result.Ok(2)));
+        await executor.Then("next", ct => Task.FromResult(Result.Ok(2)));
         Assert.Contains(executor.StepResults, s => s.Key == "next");
     }
 
     [Fact(Skip = "Invalid test. tasks can run parallel so this can happen")]
     public async Task Then_WithFailedStep_DoesNotExecute()
     {
-        var executor = AsyncExecutor.StartWith<int>("key", Result<int>.Fail(new TestError { Message = "fail" }));
-        await executor.Then("next", ct => Task.FromResult<IResult<int>>(Result.Ok(2)));
+        var executor = AsyncExecutor.StartWith("key", Result<int>.Fail(new TestError { Message = "fail" }));
+        await executor.Then("next", ct => Task.FromResult(Result.Ok(2)));
         Assert.DoesNotContain(executor.StepResults, s => s.Key == "next");
     }
 
@@ -82,7 +82,7 @@ public class AsyncExecutorTests
             "next",
             (ctx, ct) => true,
             (ctx, ct) => false,
-            ct => Task.FromResult<IResult<int>>(Result.Ok(2))
+            ct => Task.FromResult(Result.Ok(2))
         );
         Assert.Contains(executor.StepResults, s => s.Key == "next");
     }
@@ -95,7 +95,7 @@ public class AsyncExecutorTests
             "next",
             (ctx, ct) => false,
             (ctx, ct) => false,
-            ct => Task.FromResult<IResult<int>>(Result.Ok(2))
+            ct => Task.FromResult(Result.Ok(2))
         );
         Assert.DoesNotContain(executor.StepResults, s => s.Key == "next");
     }
@@ -104,7 +104,7 @@ public class AsyncExecutorTests
     public async Task Do_ExecutesStep()
     {
         var executor = AsyncExecutor.StartWith("key", 1);
-        await executor.Do("do", ct => Task.FromResult<IResult>(Result.Ok()));
+        await executor.Do("do", ct => Task.FromResult(Result.Ok()));
         Assert.Contains(executor.StepResults, s => s.Key == "do");
     }
 
@@ -151,7 +151,7 @@ public class AsyncExecutorTests
     [Fact]
     public async Task GetResult_ReturnsFailIfFailures()
     {
-        var executor = AsyncExecutor.StartWith<int>("key", Result<int>.Fail(new TestError { Message = "fail" }));
+        var executor = AsyncExecutor.StartWith("key", Result<int>.Fail(new TestError { Message = "fail" }));
         var result = await executor.GetResult();
         Assert.False(result.IsSuccess);
     }
@@ -167,7 +167,7 @@ public class AsyncExecutorTests
     [Fact]
     public async Task GetResultT_ReturnsFailIfFailures()
     {
-        var executor = AsyncExecutor.StartWith<int>("key", Result<int>.Fail(new TestError { Message = "fail" }));
+        var executor = AsyncExecutor.StartWith("key", Result<int>.Fail(new TestError { Message = "fail" }));
         var result = await executor.GetResult<int>("key");
         Assert.False(result.IsSuccess);
     }
@@ -202,7 +202,7 @@ public class AsyncExecutorTests
         var executor = AsyncExecutor.StartWith("key", 1);
         await executor.Group("group", async ex =>
         {
-            await ex.Then("g1", ct => Task.FromResult<IResult<int>>(Result.Ok(2)));
+            await ex.Then("g1", ct => Task.FromResult<Result<int>>(Result.Ok(2)));
         });
         Assert.Contains(executor.StepResults, s => s.Key == "g1");
     }
@@ -214,9 +214,9 @@ public class AsyncExecutorTests
         bool compensationCalled = false;
         await executor.ThenWithCompensation(
             "step",
-            ct => Task.FromResult<IResult<int>>(Result.Ok(2)),
+            ct => Task.FromResult<Result<int>>(Result.Ok(2)),
             "comp",
-            ctx => { compensationCalled = true; return Task.FromResult<IResult>(Result.Ok()); }
+            ctx => { compensationCalled = true; return Task.FromResult<Result>(Result.Ok()); }
         );
         await executor.CompensateAll();
         Assert.True(compensationCalled);

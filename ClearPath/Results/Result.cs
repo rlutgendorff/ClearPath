@@ -36,7 +36,7 @@ public partial class Result : BaseResult
   }
 }
 
-public partial class Result<TValue> : BaseResult<TValue>
+public partial class Result<TValue> : Result
 {
   internal Result()
   {
@@ -51,8 +51,11 @@ public partial class Result<TValue> : BaseResult<TValue>
   {
     Value = value;
   }
-  
-  public Result<TOut> OnSuccess<TOut>(Func<TValue, Result<TOut>> func)
+
+  public TValue? Value { get; set; }
+  public TValue ValueOrDefault => IsSuccess ? Value! : default!;
+
+    public Result<TOut> OnSuccess<TOut>(Func<TValue, Result<TOut>> func)
   {
     return IsSuccess ? func(Value) : ToResult<TOut>();
   }

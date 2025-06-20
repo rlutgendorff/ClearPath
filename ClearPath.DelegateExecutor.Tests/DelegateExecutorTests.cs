@@ -25,15 +25,15 @@ namespace ClearPath.DelegateExecutor.Tests
         }
 
         [ReturnTypeKey("test")]
-        private Task<IResult<Test>> CreateTest(Guid userId)
+        private Task<Result<Test>> CreateTest(Guid userId)
         {
-            return Task.FromResult<IResult<Test>>(Result.Ok(new Test { Name = userId.ToString() }));
+            return Task.FromResult(Result.Ok(new Test { Name = userId.ToString() }));
         }
 
         [ReturnTypeKey("result")]
-        private Task<IResult<string>> CreateTest2(Test test)
+        private Task<Result<string>> CreateTest2(Test test)
         {
-            return Task.FromResult<IResult<string>>(Result.Ok(test.Name));
+            return Task.FromResult(Result.Ok(test.Name));
         }
 
         private void CreateTest3(string result)

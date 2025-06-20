@@ -2,22 +2,22 @@
 
 namespace ClearPath.Results;
 
-public interface IResult
-{
-    bool IsFailed { get; }
+//public interface IResult
+//{
+//    bool IsFailed { get; }
     
-    bool IsSuccess { get; }
+//    bool IsSuccess { get; }
     
-    List<IReason> Reasons { get; }
+//    List<IReason> Reasons { get; }
     
-    IReadOnlyList<IError> Errors { get; }
+//    IReadOnlyList<IError> Errors { get; }
     
-    IReadOnlyList<ISuccess> Successes { get; }
-}
+//    IReadOnlyList<ISuccess> Successes { get; }
+//}
 
-public interface IResult<out TValue> : IResult
-{
-    TValue? Value { get; }
+//public interface IResult<out TValue> : IResult
+//{
+//    TValue? Value { get; }
     
-    TValue ValueOrDefault { get; }
-}
+//    TValue ValueOrDefault { get; }
+//}

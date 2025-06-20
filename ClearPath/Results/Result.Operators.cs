@@ -17,11 +17,6 @@ public partial class Result
 
 public partial class Result<TValue>
 {
-    public static implicit operator Result<TValue>(Result result)
-    {
-        return result.ToResult<TValue>();
-    }
-    
     public static implicit operator Result<TValue>(Error error)
     {
         return Fail(error);
